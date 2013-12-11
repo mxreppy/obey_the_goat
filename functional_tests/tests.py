@@ -66,10 +66,21 @@ class NewVisitorTest(LiveServerTestCase): #1
 		self.browser.quit()
 		self.browser = webdriver.Firefox()
 		
-		self.browser.get( self.live_server_url )
+		self.browser.get( self.live_server_url )	
 		page_text = self.browser.find_element_by_tag_name( 'body' ).text
 		self.assertNotIn( 'Buy peacock feathers', page_text )
 		self.assertNotIn( 'feathers to fly' , page_text )
+		
+		# Francis starts a new list
+		inputbox = self.browser.find_element_by_id( 'id_new-item')
+		inputbox.send_keys( 'buy milk')
+		inputbox.send_keys( Keys.ENTER )
+		
+		# Francis gets a unique url
+		francis_url = self.browser.current_url
+		self.assertRegex( francis_url, '/lists/.+' )
+		self.assertNotEqual( francis_url, edith_list_url )
+
 		
 		self.fail('Finish the test!') #6
 
