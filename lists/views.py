@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 # from django.shortcuts 
 
@@ -10,11 +10,6 @@ def home_page( request ):
 	if request.method == 'POST':
 		new_text = request.POST['item_text']
 		Item.objects.create( text=new_text )
-
-	else:
-		new_text = ''
-			
+		return redirect('/')
 	
-	return render( request, 'home.html', {
-		'new_item_text': new_text,
-	})
+	return render( request, 'home.html' )
