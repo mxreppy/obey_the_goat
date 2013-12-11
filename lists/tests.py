@@ -21,6 +21,11 @@ class SmokeTest(TestCase):
 		expected_html = render_to_string( 'home.html' )
 		self.assertEqual( response.content.decode(), expected_html )
 	
+	def test_home_page_only_saves_when_data( self );
+		request = HttpRequest()
+		home_page( request )
+		self.assertEqual( Items.objects.all().count(), 0 )
+		
 	def test_home_page_can_take_post(self):
 		request = HttpRequest()
 		request.method = 'POST'
