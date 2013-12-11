@@ -45,19 +45,8 @@ class SmokeTest(TestCase):
 		response = home_page( request) 
 		
 		self.assertEqual( response.status_code, 302)
-		self.assertEqual( response['location'], '/' )
-		
-	def test_home_page_displays_all( self ):
-		Item.objects.create( text='itemmmmm 1' )
-		Item.objects.create( text='itemmmm 2' )
-		
-		request = HttpRequest()
-		
-		response = home_page( request )
-		
-		self.assertIn( 'itemmmmm 1', response.content.decode() )
-		self.assertIn( 'itemmmm 2', response.content.decode() )
-		
+		self.assertEqual( response['location'], '/lists/the-only-list-in-theworld/' )
+				
 			
 	
 class ItemModelTest( TestCase ):
@@ -80,3 +69,19 @@ class ItemModelTest( TestCase ):
 		
 		self.assertEqual( second_saved_item.text, 'Item the seconduo' )
 		
+		
+class ListViewTest( TestCase ):
+	def test_displays_all_items( self ):
+		Item.objects.create( text='itemmmmm 1' )
+		Item.objects.create( text='itemmmm 2' )
+
+		response = self.client.get( '/lists/the-only-list-in-theworld/' )
+		
+		self.assertContains( response, 'itemmmmm 1')
+		self.assertContains( response, 'itemmmm 2' )
+# 		self.assertContains( response, )
+
+	def test_uses_list_template( self ) :
+		response = self.client.get( '/lists/the-only-list-in-theworld/' )
+		self.assertTemplateUsed( response, 'list.html' )
+			
