@@ -46,6 +46,10 @@ class NewVisitorTest(LiveServerTestCase): #1
 		# when she hits enter, the page updates and lists the todo
 		inputbox.send_keys( Keys.ENTER )
 		
+		# Check URL to see if we redirected to a /lists path
+		edith_list_url = self.browser.current_url
+		self.assertRegex( edith_list_url, '/lists/.+')
+		
 		self.check_for_row_in_table( '1: Buy peacock feathers' )
 		
 		# there is still a text box
@@ -56,6 +60,16 @@ class NewVisitorTest(LiveServerTestCase): #1
 		# the page updates and shows both elements
 		self.check_for_row_in_table( '1: Buy peacock feathers' )
 		self.check_for_row_in_table( '2: Use feathers to fly' )
+		
+		
+		# Francis also visits (from a new browser), and sees his own data (not ediths)
+		self.browser.quit()
+		self.browser = webdriver.Firefox()
+		
+		self.browser.get( self.live_server_url )
+		page_text = self.browser.find_element_by_tag_name( 'body' ).text
+		self.assertNotIn( 'Buy peacock feathers', page_text )
+		self.assertNotIn( 'feathers to fly' , page_text )
 		
 		self.fail('Finish the test!') #6
 
