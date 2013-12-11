@@ -26,7 +26,7 @@ class SmokeTest(TestCase):
 		home_page( request )
 		self.assertEqual( Item.objects.all().count(), 0 )
 		
-	def test_home_page_can_take_POST(self):
+	def test_home_page_can_save_POST(self):
 		request = HttpRequest()
 		request.method = 'POST'
 		request.POST['item_text'] = "A new list item"
@@ -36,9 +36,28 @@ class SmokeTest(TestCase):
 		self.assertEqual( Item.objects.all().count(), 1)
 		new_item = Item.objects.all()[0]
 		self.assertEqual( new_item.text, 'A new list item' )
-
+			
+	def test_home_page_POST_redirects(self):
+		request = HttpRequest()
+		request.method = 'POST'
+		request.POST['item_text'] = "A new list item"
+		
+		response = home_page( request) 
+		
 		self.assertEqual( response.status_code, 302)
 		self.assertEqual( response['location'], '/' )
+		
+	def test_home_page_displays_all( self ):
+		Item.objects.create( text='itemmmmm 1' )
+		Item.objects.create( text='itemmmm 2' )
+		
+		request = HttpRequest()
+		
+		response = home_page( request )
+		
+		self.assertIn( 'itemmmmm 1', response.content.decode() )
+		self.assertIn( 'itemmmm 2', response.content.decode() )
+		
 			
 	
 class ItemModelTest( TestCase ):
