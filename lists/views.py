@@ -1,10 +1,16 @@
 from django.shortcuts import render
-# from django.http import HttpResponse
+from django.http import HttpResponse
 # from django.shortcuts 
 
 # Create your views here.
 def home_page( request ):
-	return render( request, 'home.html' )
-# 	return HttpResponse( '<html><title>To-Do lists</title></html>')
+
+# 	if request.method == 'POST':
+# 		return HttpResponse(request.POST['item_text'])
+# 	return render( request, 'home.html' )
+
+	itemtext = request.POST.get( 'item_text', '' )
 	
-# home_page = None
+	return render( request, 'home.html', {
+		'new_item_text': itemtext,
+	})
