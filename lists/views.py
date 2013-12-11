@@ -7,15 +7,14 @@ from lists.models import Item
 # Create your views here.
 def home_page( request ):
 
-# 	if request.method == 'POST':
-# 		return HttpResponse(request.POST['item_text'])
-# 	return render( request, 'home.html' )
-	
-	item = Item()
-	
-	item.text = request.POST.get( 'item_text', '' )
-	item.save()
+	if request.method == 'POST':
+		new_text = request.POST['item_text']
+		Item.objects.create( text=new_text )
+
+	else:
+		new_text = ''
+			
 	
 	return render( request, 'home.html', {
-		'new_item_text': item.text,
+		'new_item_text': new_text,
 	})
