@@ -82,10 +82,35 @@ class NewVisitorTest(LiveServerTestCase): #1
 		self.assertNotEqual( francis_url, edith_list_url )
 
 		
-		self.fail('Finish the test!') #6
+# 		self.fail('Finish the test!') #6
 
 		# She is invited to enter a to-do item straight away
 #		  [...rest of comments as before]
+
+	def test_layout_and_styling( self ) :
+		# Edith goes to the home page
+		self.browser.get( self.live_server_url )
+		self.browser.set_window_size( 1024, 768 )
+		
+		inputbox = self.browser.find_element_by_tag_name( 'input' )
+		
+		self.assertAlmostEqual( 
+			inputbox.location['x'] + inputbox.size['width'] / 2,
+			512,
+			delta=3
+		)
+		
+		inputbox.send_keys( 'testing\n' )
+		
+		inputbox = self.browser.find_element_by_tag_name('input')
+		
+		self.assertAlmostEqual(
+			inputbox.location['x'] + inputbox.size['width']/2,
+			512,
+			delta=3
+		)
+		
+		
 
 # if __name__ == '__main__': #7
 # 	unittest.main(warnings='ignore') #8
