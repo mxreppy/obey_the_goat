@@ -107,6 +107,14 @@ class ListViewTest( TestCase ):
 		response = self.client.get( '/lists/%d/' % (itemlist.id,) )
 		self.assertTemplateUsed( response, 'list.html' )
 		
+	def test_passes_correct_list_to_template( self ):
+		other_list = List.objects.create()
+		current_list = List.objects.create()
+		
+		response = self.client.get( '/lists/%d/' % (current_list.id,))
+		
+		self.assertEqual( response.context['list'], current_list )
+		
 class NewItemTest( TestCase ) :
 
 	def test_can_save_a_POST_request_to_an_existing_list( self ): 

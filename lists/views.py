@@ -12,12 +12,8 @@ def home_page( request ):
 	
 def view_list( request, list_id ):
 
-	itemlist = List.objects.get( id=list_id)
-	items = Item.objects.filter( list=itemlist )
-	
-	return render( request, 'list.html', {
-		'items': items
-	})
+	itemlist = List.objects.get( id=list_id )
+	return render( request, 'list.html', { 'list': itemlist } )
 
 def new_list( request ):
 	itemlist = List.objects.create()
