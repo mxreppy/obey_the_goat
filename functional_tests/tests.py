@@ -2,11 +2,13 @@ from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+from unittest import skip
+
 import unittest
 import time
 import sys
 
-class NewVisitorTest(LiveServerTestCase): #1
+class FunctionalTest(LiveServerTestCase): #1
 
 	@classmethod
 	def setUpClass(cls):
@@ -24,7 +26,6 @@ class NewVisitorTest(LiveServerTestCase): #1
 		if cls.server_url == cls.live_server_url:
 			LiveServerTestCase.tearDownClass()
 	
-
 	def setUp(self): #2
 		self.browser = webdriver.Firefox()
 		self.browser.implicitly_wait( 3 )
@@ -37,6 +38,8 @@ class NewVisitorTest(LiveServerTestCase): #1
 		rows = table.find_elements_by_tag_name( 'tr' )
 		
 		self.assertIn( row_text, [row.text for row in rows])
+
+class NewVisitorTest( FunctionalTest ):
 
 	def test_can_start_a_list_and_retrieve_it_later(self): #4
 		# Edith has heard about a cool new online to-do app. She goes
@@ -99,10 +102,7 @@ class NewVisitorTest(LiveServerTestCase): #1
 		self.assertNotEqual( francis_url, edith_list_url )
 
 		
-# 		self.fail('Finish the test!') #6
-
-		# She is invited to enter a to-do item straight away
-#		  [...rest of comments as before]
+class LayoutAndStylingTest( FunctionalTest ):
 
 	def test_layout_and_styling( self ) :
 		# Edith goes to the home page
@@ -127,7 +127,23 @@ class NewVisitorTest(LiveServerTestCase): #1
 			delta=3
 		)
 		
-		
+class ItemValidationTest( FunctionalTest ):
 
-# if __name__ == '__main__': #7
-# 	unittest.main(warnings='ignore') #8
+	@skip
+	def test_cannot_add_empty_list_items(self):
+		# Edith goes to the home page and hits enter on an empty box
+		
+		# see's friendly warning error
+		
+		# enters text
+		
+		# now works
+		
+		# tries an empty list item on the list view page
+		
+		# similar wrning
+		
+		# but works with data
+		
+		self.fail( 'write test' )
+		
