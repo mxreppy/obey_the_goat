@@ -1,43 +1,7 @@
-from django.test import LiveServerTestCase
+from .base import FunctionalTest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-from unittest import skip
-
-import unittest
-import time
-import sys
-
-class FunctionalTest(LiveServerTestCase): #1
-
-	@classmethod
-	def setUpClass(cls):
-		for arg in sys.argv:
-			print( "sys argv is " + arg)
-			if 'liveserver' in arg:
-				cls.server_url = 'http://' + arg.split('=')[1]
-				return
-		LiveServerTestCase.setUpClass()
-		print( "setting cls.server_url")
-		cls.server_url = cls.live_server_url
-		
-	@classmethod
-	def tearDownClass(cls):
-		if cls.server_url == cls.live_server_url:
-			LiveServerTestCase.tearDownClass()
-	
-	def setUp(self): #2
-		self.browser = webdriver.Firefox()
-		self.browser.implicitly_wait( 3 )
-	
-	def tearDown(self): #3
-		self.browser.quit()
-		
-	def check_for_row_in_table( self, row_text ):
-		table = self.browser.find_element_by_id('id_list_table')
-		rows = table.find_elements_by_tag_name( 'tr' )
-		
-		self.assertIn( row_text, [row.text for row in rows])
 
 class NewVisitorTest( FunctionalTest ):
 
@@ -101,49 +65,4 @@ class NewVisitorTest( FunctionalTest ):
 		self.assertRegex( francis_url, '/lists/.+' )
 		self.assertNotEqual( francis_url, edith_list_url )
 
-		
-class LayoutAndStylingTest( FunctionalTest ):
-
-	def test_layout_and_styling( self ) :
-		# Edith goes to the home page
-		self.browser.get( self.server_url )
-		self.browser.set_window_size( 1024, 768 )
-		
-		inputbox = self.browser.find_element_by_tag_name( 'input' )
-		
-		self.assertAlmostEqual( 
-			inputbox.location['x'] + inputbox.size['width'] / 2,
-			512,
-			delta=3
-		)
-		
-		inputbox.send_keys( 'testing\n' )
-		
-		inputbox = self.browser.find_element_by_tag_name('input')
-		
-		self.assertAlmostEqual(
-			inputbox.location['x'] + inputbox.size['width']/2,
-			512,
-			delta=3
-		)
-		
-class ItemValidationTest( FunctionalTest ):
-
-	@skip
-	def test_cannot_add_empty_list_items(self):
-		# Edith goes to the home page and hits enter on an empty box
-		
-		# see's friendly warning error
-		
-		# enters text
-		
-		# now works
-		
-		# tries an empty list item on the list view page
-		
-		# similar wrning
-		
-		# but works with data
-		
-		self.fail( 'write test' )
-		
+	
