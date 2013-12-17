@@ -6,8 +6,9 @@ from django.template.loader import render_to_string
 from django.http import HttpRequest
 from django.utils.html import escape
 
-from lists.views import home_page
+from lists.forms import ItemForm
 from lists.models import Item, List
+from lists.views import home_page
 
 # Create your tests here.
 class SmokeTest(TestCase):
@@ -17,10 +18,16 @@ class SmokeTest(TestCase):
 		self.assertEqual( found.func, home_page)
 		
 	def test_home_page_returns_correct_html(self):
-		request = HttpRequest()
-		response = home_page( request) 
-		expected_html = render_to_string( 'home.html' )
-		self.assertEqual( response.content.decode(), expected_html )
+# 		request = HttpRequest()
+# 		response = home_page( request) 
+# 		expected_html = render_to_string( 'home.html' )
+# 		self.assertEqual( response.content.decode(), expected_html )
+		response = self.client.get( '/' )
+	 	self.assertTemplateUsed( response, 'home.html')
+		
+	def test_home_page_uses_itemform( self ):
+		response = self.client.get( '/' )
+		self.assertIsInstance( response.context['form'], ItemForm )
 	
 class NewListTest( TestCase ): 
 		
