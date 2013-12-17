@@ -14,6 +14,11 @@ def home_page( request ):
 def view_list( request, list_id ):
 
 	itemlist = List.objects.get( id=list_id )
+	
+	if request.method == 'POST': 
+		Item.objects.create( text=request.POST['item_text'], list=itemlist )
+		return redirect( '/lists/%d/' % ( itemlist.id, ) )
+
 	return render( request, 'list.html', { 'list': itemlist } )
 
 def new_list( request ):
@@ -27,10 +32,10 @@ def new_list( request ):
 		
 	return redirect( '/lists/%d/' % (itemlist.id, ) )
 	
-def add_item( request, list_id ) :
-
-	itemlist = List.objects.get( id=list_id )
-	Item.objects.create( text=request.POST['item_text'], list=itemlist )
-	
-	return redirect( '/lists/%d/' % (itemlist.id,) )
-	
+# def add_item( request, list_id ) :
+# 
+# 	itemlist = List.objects.get( id=list_id )
+# 	Item.objects.create( text=request.POST['item_text'], list=itemlist )
+# 	
+# 	return redirect( '/lists/%d/' % (itemlist.id,) )
+# 	
