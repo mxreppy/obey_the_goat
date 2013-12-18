@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.http import HttpRequest
 from django.utils.html import escape
 
-from lists.forms import ItemForm
+from lists.forms import ItemForm, EMPTY_LIST_ERROR
 from lists.models import Item, List
 from lists.views import home_page
 
@@ -64,11 +64,43 @@ class NewListTest( TestCase ):
 		expected_error = escape( "You can't have an empty list item" )
 # 		print( response.content.decode() )
 		self.assertContains( response, expected_error )
-	
-	
+		
+	def test_validation_errors_sent_back_to_homepage_template( self ):
+		response = self.client.post( '/lists/new', data={'text':'' } )
+		self.assertEqual( Item.objects.all().count(), 0 )
+		self.assertTemplateUsed( response, 'home.html' )
+		self.assertContains( response, escape( EMPTY_LIST_ERROR ))
+		self.assertIsInstance( response.context['form'], ItemForm )
+			
 		
 class ListViewTest( TestCase ):
 
+	def post_invalid_input( self ) : 
+		itemlist = List.objects.create()
+		
+		return self.client.post( 
+			'/lists/%d/' % ( itemlist.id, ), 
+			data={ 'text':'' } 
+		)
+	
+	def test_invalid_input_means_nothing_saved_to_db( self ):
+		self.post_invalid_input()
+		self.assertEqual( Item.objects.all().count(), 0 )
+		
+	def test_invalid_input_renders_list_template( self ):
+	 	response = self.post_invalid_input()
+	 	
+	 	self.assertTemplateUsed( response, 'list.html' )
+	 	
+	def test_invalid_input_renders_form_with_errors( self ): 
+		response = self.post_invalid_input()
+		
+		self.assertIsInstance( response.context['form'], ItemForm )
+		self.assertContains( response, escape( EMPTY_LIST_ERROR ) )
+		
+		
+		
+	
 	def test_displays_only_correct_items( self ):
 		correct_list = List.objects.create()
 		
@@ -128,16 +160,10 @@ class ListViewTest( TestCase ):
 		
 		self.assertRedirects( response, '/lists/%d/' % (correct_list.id, ) )
 				
-	def test_validation_errors_end_up_on_lists_page( self ):
-		listey = List.objects.create()
+
+	def test_displays_item_form( self ): 
+		testlist = List.objects.create()
+		response = self.client.get( '/lists/%d/' % ( testlist.id, ) ) 
 		
-		response = self.client.post( 
-			'/lists/%d/' % ( listey.id, ),
-			data={ 'text':'' } 
-		)		
-		
-		self.assertEqual( Item.objects.all().count(), 0 ) 
-		self.assertTemplateUsed( response, 'list.html' )
-		
-		expected_error= escape( "You can't have an empty list item" )
-		self.assertContains( response, expected_error )
+		self.assertIsInstance( response.context['form'], ItemForm )
+		self.assertContains( response, 'name="text"' )

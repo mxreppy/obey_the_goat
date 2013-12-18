@@ -19,30 +19,26 @@ def home_page( request ):
 def view_list( request, list_id ):
 
 	itemlist = List.objects.get( id=list_id )
-	error = None
-	
+	form = ItemForm()
+
 	if request.method == 'POST': 
-		try: 
+		form = ItemForm( data=request.POST ) 
+		if form.is_valid(): 			
 			Item.objects.create( text=request.POST['text'], list=itemlist )
 			return redirect( itemlist )
-		except ValidationError:
-			error = "You can't have an empty list item" 
-
-	return render( 
-		request, 
-		'list.html', 
-		{ 'list': itemlist, 'error': error } 
+	
+	return render( request, 'list.html', 
+		{ 'list': itemlist, 'form': form } 
 	)
 
+
 def new_list( request ):
-	itemlist = List.objects.create()
-	
-	try: 
+	form = ItemForm( data=request.POST )
+	if( form.is_valid()): 
+		itemlist = List.objects.create()
 		Item.objects.create( text=request.POST['text'] , list=itemlist)
-	except ValidationError:
-		error_text = "You can't have an empty list item" 
-		return render( request, 'home.html', {'error': error_text } )
-		
-	# even better with the model defining get_absolute_url
-	return redirect( itemlist )
+		# even better with the model defining get_absolute_url
+		return redirect( itemlist )
+	else:
+		return render( request, 'home.html', {"form": form } )
 	
