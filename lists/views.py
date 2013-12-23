@@ -19,14 +19,22 @@ def home_page( request ):
 def view_list( request, list_id ):
 
 	itemlist = List.objects.get( id=list_id )
-	form = ItemForm()
+# 	form = ItemForm()
 
-	if request.method == 'POST': 
-		form = ItemForm( data=request.POST ) 
-		if form.is_valid(): 			
-			Item.objects.create( text=request.POST['text'], list=itemlist )
-			return redirect( itemlist )
+# basic method
+# 	if request.method == 'POST': 
+# 		form = ItemForm( data=request.POST ) 
+# 		if form.is_valid(): 			
+# # 			Item.objects.create( text=request.POST['text'], list=itemlist )
+# 			form.save( for_list=itemlist )
+# 			return redirect( itemlist )
 	
+	# POST or none method
+	form = ItemForm( data=request.POST or None )
+	if form.is_valid() :
+		form.save( for_list=itemlist )
+		return redirect( itemlist )
+		
 	return render( request, 'list.html', 
 		{ 'list': itemlist, 'form': form } 
 	)
@@ -36,7 +44,8 @@ def new_list( request ):
 	form = ItemForm( data=request.POST )
 	if( form.is_valid()): 
 		itemlist = List.objects.create()
-		Item.objects.create( text=request.POST['text'] , list=itemlist)
+# 		Item.objects.create( text=request.POST['text'] , list=itemlist)
+		form.save( for_list=itemlist )
 		# even better with the model defining get_absolute_url
 		return redirect( itemlist )
 	else:
